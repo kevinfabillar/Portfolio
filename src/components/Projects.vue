@@ -262,9 +262,10 @@ const projects = [
     description:
       'A landing page for Knotiva, a digital wedding invitation service — pick a template, submit the couple\'s names and date, and receive a finished invitation.',
     points: [
-      'Built the marketing site covering templates, process, and contact.',
+      'Built a procedural 3D mascot with Three.js, rendered through a custom <three-d-stage> Web Component (Shadow DOM).',
+      'Client-side routed with React Router across hero, animation, and character views; deployed as a static SPA on Vercel.',
     ],
-    stack: [],
+    stack: ['React', 'Three.js', 'React Router', 'Vite', 'Vercel'],
   },
   {
     tag: 'Personal Project',
