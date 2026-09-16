@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chromium-cli --session portfolio)",
+      "Bash(npx --no-install playwright --version)",
+      "Read(//c//**)",
+      "Bash(node \"C:\\\\Users\\\\kevin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-kevin-Downloads-portfolio-portfolio\\\\35b33f7d-c99d-46af-9e5c-c6096fbd55c4\\\\scratchpad\\\\screenshot.js\")",
+      "Bash(npx playwright *)",
+      "Bash(lsof -ti:5173 -sTCP:LISTEN)",
+      "Bash(xargs -r kill)",
+      "Bash(node \"C:\\\\Users\\\\kevin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-kevin-Downloads-portfolio-portfolio\\\\35b33f7d-c99d-46af-9e5c-c6096fbd55c4\\\\scratchpad\\\\modal_test.js\")",
+      "Bash(npm root *)",
+      "Bash(sed -i \"1s|.*|const { chromium } = require\\('/c/Users/kevin/AppData/Local/npm-cache/_npx/a8a7eec953f1f314/node_modules/playwright'\\);|\" \"C:\\\\Users\\\\kevin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-kevin-Downloads-portfolio-portfolio\\\\35b33f7d-c99d-46af-9e5c-c6096fbd55c4\\\\scratchpad\\\\modal_test.js\")",
+      "Bash(sed -i \"1s|.*|const { chromium } = require\\('C:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\Users\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\kevin\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\AppData\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\Local\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\npm-cache\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_npx\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\a8a7eec953f1f314\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\node_modules\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\playwright'\\);|\" \"C:\\\\Users\\\\kevin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-kevin-Downloads-portfolio-portfolio\\\\35b33f7d-c99d-46af-9e5c-c6096fbd55c4\\\\scratchpad\\\\modal_test.js\")",
+      "Bash(node \"C:\\\\Users\\\\kevin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-kevin-Downloads-portfolio-portfolio\\\\35b33f7d-c99d-46af-9e5c-c6096fbd55c4\\\\scratchpad\\\\modal_test2.js\")"
+    ]
+  }
+}
