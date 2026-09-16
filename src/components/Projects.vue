@@ -39,7 +39,12 @@
             </button>
           </div>
           <div class="project-thumb thumb-placeholder" v-else-if="p.image">
-            <img :src="p.image" :alt="p.title" class="thumb-img" />
+            <a v-if="p.link" :href="p.link" target="_blank" rel="noopener" class="thumb-link" :aria-label="'Visit ' + p.title">
+              <img :src="p.image" :alt="p.title" class="thumb-img" />
+              <span class="thumb-overlay" aria-hidden="true"></span>
+              <span class="visit-badge" aria-hidden="true">Visit website <i class="pi pi-external-link"></i></span>
+            </a>
+            <img v-else :src="p.image" :alt="p.title" class="thumb-img" />
           </div>
           <div class="project-thumb thumb-placeholder" v-else>
             <i :class="'pi ' + p.thumbIcon"></i>
@@ -118,7 +123,12 @@
             </button>
           </div>
           <div class="project-thumb modal-thumb thumb-placeholder" v-else-if="activeProject.image">
-            <img :src="activeProject.image" :alt="activeProject.title" class="thumb-img" />
+            <a v-if="activeProject.link" :href="activeProject.link" target="_blank" rel="noopener" class="thumb-link" :aria-label="'Visit ' + activeProject.title">
+              <img :src="activeProject.image" :alt="activeProject.title" class="thumb-img" />
+              <span class="thumb-overlay" aria-hidden="true"></span>
+              <span class="visit-badge" aria-hidden="true">Visit website <i class="pi pi-external-link"></i></span>
+            </a>
+            <img v-else :src="activeProject.image" :alt="activeProject.title" class="thumb-img" />
           </div>
           <div class="project-thumb modal-thumb thumb-placeholder" v-else>
             <i :class="'pi ' + activeProject.thumbIcon"></i>
@@ -213,6 +223,7 @@ const projects = [
     video: '',
     repo: '',
     image: '/images/WeddingInvitation1.png',
+    link: 'https://monxkarlla.knotiva.my/',
     thumbIcon: 'pi-heart',
     description:
       'A public-facing digital wedding invitation paired with a private admin dashboard for guest management.',
@@ -229,6 +240,7 @@ const projects = [
     video: '',
     repo: '',
     image: '/images/WeddingInvitation2.png',
+    link: 'https://kate-otep.vercel.app/',
     thumbIcon: 'pi-heart',
     description:
       'A second client wedding invitation site, built on the same public invitation + admin dashboard pattern as the first, with an expanded set of guest-facing pages.',
@@ -237,6 +249,22 @@ const projects = [
       'Reused the Firebase Firestore + Realtime Database RSVP pipeline from the first build, restyled for a new couple.',
     ],
     stack: ['HTML', 'CSS', 'JavaScript', 'Firebase'],
+  },
+  {
+    tag: 'Personal Project',
+    title: 'Knotiva — Digital Wedding Invitation Landing Page',
+    period: '2026',
+    video: '',
+    repo: '',
+    image: '',
+    link: 'https://knotiva.my/',
+    thumbIcon: 'pi-heart',
+    description:
+      'A landing page for Knotiva, a digital wedding invitation service — pick a template, submit the couple\'s names and date, and receive a finished invitation.',
+    points: [
+      'Built the marketing site covering templates, process, and contact.',
+    ],
+    stack: [],
   },
   {
     tag: 'Personal Project',
@@ -337,6 +365,38 @@ const projects = [
   position: absolute;
   inset: 0;
   background: rgba(6, 10, 8, 0.32);
+}
+.thumb-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.thumb-link .thumb-overlay {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.thumb-link:hover .thumb-overlay {
+  opacity: 1;
+}
+.visit-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  opacity: 0;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s ease;
+}
+.thumb-link:hover .visit-badge {
+  opacity: 1;
+}
+.visit-badge i {
+  font-size: 12px;
 }
 .play-btn {
   position: absolute;
