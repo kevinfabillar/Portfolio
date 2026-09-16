@@ -12,7 +12,7 @@
         </p>
 
         <div class="hero-actions">
-          <a class="btn-primary" href="mailto:kevinfabillar01@gmail.com">
+          <a class="btn-primary" href="#contact">
             <i class="pi pi-envelope"></i> Email me
           </a>
           <a class="btn-ghost" href="#projects">

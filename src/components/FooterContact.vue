@@ -37,9 +37,15 @@
             <i class="pi pi-pencil"></i>
             <textarea v-model="message" required placeholder="Your message" rows="5" aria-label="Your message"></textarea>
           </label>
-          <button type="submit" class="contact-submit">
-            Send Message <i class="pi pi-send"></i>
+          <button type="submit" class="contact-submit" :disabled="status === 'sending'">
+            {{ status === 'sending' ? 'Sending...' : 'Send Message' }} <i class="pi pi-send"></i>
           </button>
+          <p v-if="status === 'success'" class="form-status form-status-success">
+            <i class="pi pi-check-circle"></i> Message sent — I'll get back to you soon.
+          </p>
+          <p v-if="status === 'error'" class="form-status form-status-error">
+            <i class="pi pi-exclamation-circle"></i> Something went wrong. Please try again or email me directly.
+          </p>
         </form>
 
         <p class="privacy-note"><i class="pi pi-lock"></i> Your information is safe and will never be shared.</p>
@@ -55,7 +61,7 @@
           <p class="brand-role">Software Developer · Electronics Engineer</p>
           <p class="brand-desc">Building reliable systems and clean solutions that make an impact.</p>
           <div class="footer-links">
-            <a href="#" aria-label="GitHub"><i class="pi pi-github"></i></a>
+            <a href="https://github.com/kevinfabillar" target="_blank" rel="noopener" aria-label="GitHub"><i class="pi pi-github"></i></a>
             <a href="https://www.linkedin.com/in/kevin-fabillar-820444241/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="pi pi-linkedin"></i></a>
             <a href="mailto:kevinfabillar01@gmail.com" aria-label="Email"><i class="pi pi-envelope"></i></a>
             <a href="#projects" aria-label="Projects"><i class="pi pi-code"></i></a>
@@ -83,7 +89,7 @@
           <a href="#" class="quick-link" @click.prevent="downloadVCard">
             <i class="pi pi-user"></i> Download VCard
           </a>
-          <a href="#" class="quick-link">
+          <a href="https://github.com/kevinfabillar" target="_blank" rel="noopener" class="quick-link">
             <i class="pi pi-github"></i> View on GitHub
           </a>
         </div>
@@ -107,10 +113,16 @@
 
 <script setup>
 import { ref } from 'vue'
+import emailjs from '@emailjs/browser'
 import CircuitBg from './CircuitBg.vue'
+
+const EMAILJS_SERVICE_ID = 'service_8f9ubzf'
+const EMAILJS_TEMPLATE_ID = 'template_5hnmckq'
+const EMAILJS_PUBLIC_KEY = 'qMOb5mz9ZYuG4o5Qf'
 
 const email = ref('')
 const message = ref('')
+const status = ref('idle')
 
 const details = [
   { icon: 'pi-envelope', label: 'Email', value: 'kevinfabillar01@gmail.com' },
@@ -118,10 +130,22 @@ const details = [
   { icon: 'pi-map-marker', label: 'Location', value: 'Marikina City, Philippines' },
 ]
 
-function sendEmail() {
-  const subject = encodeURIComponent('Portfolio contact from ' + email.value)
-  const body = encodeURIComponent(message.value + '\n\n— ' + email.value)
-  window.location.href = `mailto:kevinfabillar01@gmail.com?subject=${subject}&body=${body}`
+async function sendEmail() {
+  status.value = 'sending'
+  try {
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      { from_email: email.value, message: message.value },
+      { publicKey: EMAILJS_PUBLIC_KEY }
+    )
+    status.value = 'success'
+    email.value = ''
+    message.value = ''
+  } catch (err) {
+    console.error('EmailJS send failed:', err)
+    status.value = 'error'
+  }
 }
 
 function downloadVCard() {
@@ -290,6 +314,24 @@ function downloadVCard() {
 .contact-submit:hover {
   background: var(--copper-bright);
   transform: translateY(-1px);
+}
+.contact-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+.form-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0 0;
+  font-size: 13px;
+}
+.form-status-success {
+  color: #4caf7d;
+}
+.form-status-error {
+  color: #e0645a;
 }
 .privacy-note {
   display: flex;

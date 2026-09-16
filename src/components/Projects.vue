@@ -3,7 +3,7 @@
     <div class="container">
       <div class="block-header">
         <span class="block-label"><i class="pi pi-send"></i> Featured Projects</span>
-        <a href="#" class="block-link">View All <i class="pi pi-arrow-right"></i></a>
+        <a href="https://github.com/kevinfabillar" target="_blank" rel="noopener" class="block-link">View All <i class="pi pi-arrow-right"></i></a>
       </div>
 
       <div class="grid-3col">
