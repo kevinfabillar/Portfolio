@@ -256,7 +256,7 @@ const projects = [
     period: '2026',
     video: '',
     repo: '',
-    image: '',
+    image: '/images/landingpage.png',
     link: 'https://knotiva.my/',
     thumbIcon: 'pi-heart',
     description:

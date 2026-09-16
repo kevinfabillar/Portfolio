@@ -1,5 +1,7 @@
 # Kevin A. Fabillar — Portfolio
 
+Live: [kevinfabillarportfolio.vercel.app](https://kevinfabillarportfolio.vercel.app/)
+
 Built with **Vue 3**, **Vite**, and **PrimeVue 4** (Aura theme, custom "circuit-board" preset).
 
 ## Sections
