@@ -84,28 +84,28 @@ const stats = [
 
 <style scoped>
 .hero {
-  padding: 56px 0 40px;
+  padding: 48px 0 24px;
   overflow: hidden;
 }
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr 0.85fr;
-  gap: 48px;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: clamp(32px, 4vw, 64px);
   align-items: center;
 }
 .name {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(32px, 4.6vw, 48px);
+  font-size: clamp(32px, 4.2vw, 60px);
   line-height: 1.1;
   margin: 16px 0 16px;
   letter-spacing: -0.02em;
 }
 .role {
-  font-size: 17px;
+  font-size: clamp(16px, 1.25vw, 19px);
   line-height: 1.6;
   color: var(--text-dim);
-  max-width: 46ch;
+  max-width: 54ch;
   margin: 0 0 26px;
 }
 .hl {
@@ -166,7 +166,8 @@ const stats = [
 .hero-panel {
   position: relative;
   aspect-ratio: 1 / 1;
-  max-width: 420px;
+  max-width: 440px;
+  width: 100%;
   margin-left: auto;
 }
 .photo-frame {
@@ -206,7 +207,7 @@ const stats = [
   font-size: 15.5px;
   line-height: 1.7;
   color: var(--text-dim);
-  max-width: 68ch;
+  max-width: 78ch;
   margin: 0 0 16px;
 }
 .stats-card {

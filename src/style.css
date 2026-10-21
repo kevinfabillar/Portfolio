@@ -59,9 +59,9 @@ button:focus-visible,
 }
 
 .container {
-  max-width: 1180px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 28px;
+  padding: 0 clamp(20px, 4vw, 56px);
   position: relative;
 }
 
@@ -139,7 +139,7 @@ section {
 }
 
 .block-row {
-  padding: 22px 0;
+  padding: 20px 0;
 }
 
 .grid-2col-equal {
@@ -181,8 +181,5 @@ section {
 @media (max-width: 640px) {
   .grid-3col {
     grid-template-columns: 1fr;
-  }
-  .container {
-    padding: 0 20px;
   }
 }
