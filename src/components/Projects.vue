@@ -7,81 +7,66 @@
       </div>
 
       <div class="grid-3col">
-        <article class="card project-card" v-for="p in projects" :key="p.title">
-          <div class="project-thumb" v-if="p.video || p.videoFile">
-            <video
-              v-if="p.videoFile && playing[p.title]"
-              :src="p.videoFile"
-              controls
-              autoplay
-              preload="metadata"
-              playsinline
-            ></video>
-            <iframe
-              v-else-if="playing[p.title]"
-              :src="withAutoplay(p.video)"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              allowfullscreen
-              loading="lazy"
-              title="Project demo video"
-            ></iframe>
-            <button
-              v-else
-              type="button"
-              class="thumb-play"
-              @click="playing[p.title] = true"
-              :aria-label="'Play ' + p.title + ' demo video'"
-            >
-              <img v-if="p.image" :src="p.image" :alt="p.title" class="thumb-img" />
-              <span v-if="p.image" class="thumb-overlay" aria-hidden="true"></span>
-              <i v-if="!p.image" :class="'pi ' + p.thumbIcon" class="thumb-bg-icon"></i>
-              <span class="play-btn"><i class="pi pi-play-fill"></i></span>
-            </button>
-          </div>
-          <div class="project-thumb thumb-placeholder" v-else-if="p.image">
-            <a v-if="p.link" :href="p.link" target="_blank" rel="noopener" class="thumb-link" :aria-label="'Visit ' + p.title">
-              <img :src="p.image" :alt="p.title" class="thumb-img" />
-              <span class="thumb-overlay" aria-hidden="true"></span>
-              <span class="visit-badge" aria-hidden="true">Visit website <i class="pi pi-external-link"></i></span>
-            </a>
-            <img v-else :src="p.image" :alt="p.title" class="thumb-img" />
-          </div>
-          <div class="project-thumb thumb-placeholder" v-else>
-            <i :class="'pi ' + p.thumbIcon"></i>
-          </div>
+        <article class="card project-card" v-for="p in visibleProjects" :key="p.title">
+          <button
+            type="button"
+            class="project-thumb thumb-btn"
+            :class="{ 'thumb-placeholder': !p.image }"
+            @click="activeProject = p"
+            :aria-label="'View ' + p.title + ' details'"
+          >
+            <img v-if="p.image" :src="p.image" :alt="p.title" class="thumb-img" loading="lazy" />
+            <span v-else class="thumb-empty">
+              <i :class="'pi ' + p.thumbIcon"></i>
+              <span>{{ p.noPreview || 'No public preview' }}</span>
+            </span>
+            <span class="thumb-overlay" aria-hidden="true"></span>
+            <span class="visit-badge" aria-hidden="true">
+              <template v-if="p.videoFile"><i class="pi pi-play-fill"></i> Watch demo</template>
+              <template v-else>View details</template>
+            </span>
+            <span v-if="p.videoFile" class="video-pill" aria-hidden="true"><i class="pi pi-video"></i> Demo</span>
+          </button>
 
           <div class="project-body">
             <div class="project-head">
               <span class="project-tag">{{ p.tag }}</span>
+              <span class="project-period">{{ p.period }}</span>
+            </div>
+            <h3>{{ p.title }}</h3>
+            <p class="project-desc">{{ p.description }}</p>
+
+            <div class="project-stack">
+              <span v-for="s in p.stack" :key="s" class="mini-chip">{{ s }}</span>
+            </div>
+
+            <div class="project-actions">
+              <button type="button" class="view-btn" @click="activeProject = p">
+                View details <i class="pi pi-arrow-right"></i>
+              </button>
+              <a v-if="p.link" :href="p.link" target="_blank" rel="noopener" class="action-link">
+                Live site <i class="pi pi-external-link"></i>
+              </a>
               <a
                 v-if="p.repo"
                 :href="p.repo"
                 target="_blank"
                 rel="noopener"
-                class="repo-link"
+                class="action-link"
                 :aria-label="'View ' + p.title + ' source on GitHub'"
               >
                 <i class="pi pi-github"></i>
               </a>
             </div>
-            <h3>{{ p.title }}</h3>
-            <span class="project-period">{{ p.period }}</span>
-
-            <div class="project-details">
-              <p class="project-desc">{{ p.description }}</p>
-              <ul class="project-points">
-                <li v-for="point in p.points" :key="point">{{ point }}</li>
-              </ul>
-            </div>
-            <button type="button" class="view-btn" @click="activeProject = p">
-              View details <i class="pi pi-external-link"></i>
-            </button>
-
-            <div class="project-stack">
-              <span v-for="s in p.stack" :key="s" class="mini-chip">{{ s }}</span>
-            </div>
           </div>
         </article>
+      </div>
+
+      <div class="see-all-wrap" v-if="projects.length > MAX_VISIBLE">
+        <button type="button" class="see-all-btn" @click="showAll = !showAll" :aria-expanded="showAll">
+          {{ showAll ? 'Show less' : `See all (${projects.length})` }}
+          <i :class="showAll ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
+        </button>
       </div>
     </div>
 
@@ -92,17 +77,22 @@
             <i class="pi pi-times"></i>
           </button>
 
-          <div class="project-thumb modal-thumb" v-if="activeProject.video || activeProject.videoFile">
+          <div class="project-thumb modal-thumb" v-if="activeProject.videoFile">
             <video
-              v-if="activeProject.videoFile && playing[activeProject.title]"
+              :key="activeProject.videoFile"
               :src="activeProject.videoFile"
+              :poster="activeProject.image || undefined"
               controls
               autoplay
-              preload="metadata"
+              muted
+              loop
               playsinline
+              preload="metadata"
             ></video>
+          </div>
+          <div class="project-thumb modal-thumb" v-else-if="activeProject.video">
             <iframe
-              v-else-if="playing[activeProject.title]"
+              v-if="playing[activeProject.title]"
               :src="withAutoplay(activeProject.video)"
               allow="autoplay; encrypted-media; picture-in-picture"
               allowfullscreen
@@ -112,52 +102,41 @@
             <button
               v-else
               type="button"
-              class="thumb-play"
+              class="thumb-btn"
               @click="playing[activeProject.title] = true"
               :aria-label="'Play ' + activeProject.title + ' demo video'"
             >
               <img v-if="activeProject.image" :src="activeProject.image" :alt="activeProject.title" class="thumb-img" />
-              <span v-if="activeProject.image" class="thumb-overlay" aria-hidden="true"></span>
-              <i v-if="!activeProject.image" :class="'pi ' + activeProject.thumbIcon" class="thumb-bg-icon"></i>
               <span class="play-btn"><i class="pi pi-play-fill"></i></span>
             </button>
           </div>
-          <div class="project-thumb modal-thumb thumb-placeholder" v-else-if="activeProject.image">
-            <a v-if="activeProject.link" :href="activeProject.link" target="_blank" rel="noopener" class="thumb-link" :aria-label="'Visit ' + activeProject.title">
-              <img :src="activeProject.image" :alt="activeProject.title" class="thumb-img" />
-              <span class="thumb-overlay" aria-hidden="true"></span>
-              <span class="visit-badge" aria-hidden="true">Visit website <i class="pi pi-external-link"></i></span>
-            </a>
-            <img v-else :src="activeProject.image" :alt="activeProject.title" class="thumb-img" />
-          </div>
-          <div class="project-thumb modal-thumb thumb-placeholder" v-else>
-            <i :class="'pi ' + activeProject.thumbIcon"></i>
+          <div class="project-thumb modal-thumb" v-else-if="activeProject.image">
+            <img :src="activeProject.image" :alt="activeProject.title" class="thumb-img" />
           </div>
 
-          <div class="modal-body">
+          <div class="modal-body" :class="{ 'modal-body--bare': !activeProject.image && !activeProject.video && !activeProject.videoFile }">
             <div class="project-head">
               <span class="project-tag">{{ activeProject.tag }}</span>
-              <a
-                v-if="activeProject.repo"
-                :href="activeProject.repo"
-                target="_blank"
-                rel="noopener"
-                class="repo-link"
-                :aria-label="'View ' + activeProject.title + ' source on GitHub'"
-              >
-                <i class="pi pi-github"></i> Source
-              </a>
+              <span class="project-period">{{ activeProject.period }}</span>
             </div>
             <h3>{{ activeProject.title }}</h3>
-            <span class="project-period">{{ activeProject.period }}</span>
 
-            <p class="project-desc">{{ activeProject.description }}</p>
+            <p class="modal-desc">{{ activeProject.description }}</p>
             <ul class="project-points">
               <li v-for="point in activeProject.points" :key="point">{{ point }}</li>
             </ul>
 
             <div class="project-stack">
               <span v-for="s in activeProject.stack" :key="s" class="mini-chip">{{ s }}</span>
+            </div>
+
+            <div class="modal-actions" v-if="activeProject.link || activeProject.repo">
+              <a v-if="activeProject.link" :href="activeProject.link" target="_blank" rel="noopener" class="modal-btn modal-btn--primary">
+                Visit live site <i class="pi pi-external-link"></i>
+              </a>
+              <a v-if="activeProject.repo" :href="activeProject.repo" target="_blank" rel="noopener" class="modal-btn">
+                <i class="pi pi-github"></i> Source
+              </a>
             </div>
           </div>
         </div>
@@ -167,10 +146,15 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch, onUnmounted } from 'vue'
+import { reactive, ref, computed, watch, onUnmounted } from 'vue'
+
+const MAX_VISIBLE = 6
 
 const playing = reactive({})
 const activeProject = ref(null)
+const showAll = ref(false)
+
+const visibleProjects = computed(() => (showAll.value ? projects : projects.slice(0, MAX_VISIBLE)))
 
 watch(activeProject, (project) => {
   document.body.style.overflow = project ? 'hidden' : ''
@@ -194,9 +178,10 @@ function withAutoplay(url) {
 //   video: '<embed URL>'   — YouTube: 'https://www.youtube.com/embed/VIDEO_ID'
 //                             Google Drive: 'https://drive.google.com/file/d/FILE_ID/preview'
 //                             (Drive file must be shared as "Anyone with the link")
-//   videoFile: '/videos/name.mp4' — a local file placed in the public/videos folder
-// image: '/images/name.png' shows a cover photo (as the video poster, or standalone if no video).
-// Without any of these, the thumbIcon renders as a placeholder graphic instead.
+//   videoFile: '/videos/name.webm' — a local file placed in the public/videos folder
+// Videos only play inside the "View details" popup; the card always shows the image.
+// image: '/images/name.png' shows a cover photo (also the video poster).
+// Without an image, the thumbIcon and noPreview text render as a placeholder instead.
 // To show a GitHub link on the card, set repo: 'https://github.com/<user>/<repo>'.
 const projects = [
   {
@@ -207,6 +192,7 @@ const projects = [
     repo: '',
     image: '',
     thumbIcon: 'pi-chart-line',
+    noPreview: 'Private client system',
     description:
       'Sole engineer maintaining three production ASP.NET Core applications (HeadOffice, Outlet, Patron) for a live forex trading platform.',
     points: [
@@ -223,6 +209,7 @@ const projects = [
     video: '',
     repo: '',
     image: '/images/WeddingInvitation1.png',
+    videoFile: '/videos/wedding-monxkarlla.webm',
     link: 'https://monxkarlla.knotiva.my/',
     thumbIcon: 'pi-heart',
     description:
@@ -257,6 +244,7 @@ const projects = [
     video: '',
     repo: '',
     image: '/images/landingpage.png',
+    videoFile: '/videos/knotiva.webm',
     link: 'https://knotiva.my/',
     thumbIcon: 'pi-heart',
     description:
@@ -266,6 +254,25 @@ const projects = [
       'Client-side routed with React Router across hero, animation, and character views; deployed as a static SPA on Vercel.',
     ],
     stack: ['React', 'Three.js', 'React Router', 'Vite', 'Vercel'],
+  },
+  {
+    tag: 'Personal Project',
+    title: 'Construction System — Project & Site Management',
+    period: '2026',
+    video: '',
+    repo: '',
+    image: '/images/ConstructionSystem.png',
+    link: 'https://brave-ocean-0b2522100.6.azurestaticapps.net/dashboard',
+    thumbIcon: 'pi-building',
+    description:
+      'A construction management system covering projects, tasks, daily site reports, manpower and attendance, materials and inventory, procurement, and budget tracking.',
+    points: [
+      'Built a .NET 10 Web API (Controllers → Services → Repositories) with EF Core 10 over SQL Server / Azure SQL, JWT auth with role-based permissions, and OpenAPI + Scalar docs.',
+      'Stored uploaded files on disk and served them through expiring signed links.',
+      'Built the Vue 3 + Vite frontend with Vuex, PrimeVue 4 and Chart.js dashboards, plus PDF (jsPDF) and Excel (ExcelJS) report exports.',
+      'Covered the API with xUnit integration tests (Mvc.Testing) and Coverlet coverage; deployed on Azure.',
+    ],
+    stack: ['.NET 10', 'EF Core', 'SQL Server', 'Azure', 'Vue 3', 'PrimeVue', 'Chart.js', 'xUnit'],
   },
   {
     tag: 'Personal Project',
@@ -292,6 +299,7 @@ const projects = [
     repo: '',
     image: '',
     thumbIcon: 'pi-microchip-ai',
+    noPreview: 'Thesis & hardware work',
     description:
       'From oil-and-water separation to embedded systems — engineering-degree work exploring AI and electronics.',
     points: [
@@ -311,10 +319,13 @@ const projects = [
   flex-direction: column;
   height: 100%;
 }
+
+/* Thumbnail */
 .project-thumb {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
   background: var(--bg-raised);
   border-bottom: 1px solid var(--line);
 }
@@ -326,34 +337,49 @@ const projects = [
   height: 100%;
   border: 0;
   display: block;
+  background: #000;
 }
-.thumb-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 30% 20%, rgba(224, 160, 79, 0.14), transparent 60%), var(--bg-raised);
-}
-.thumb-placeholder i {
-  font-size: 38px;
-  color: var(--copper);
-  opacity: 0.75;
-}
-.thumb-play {
+.thumb-btn {
   all: unset;
   box-sizing: border-box;
   cursor: pointer;
+  display: block;
   position: relative;
   width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--line);
+}
+.modal-thumb .thumb-btn {
   height: 100%;
+  border: 0;
+}
+.thumb-placeholder {
+  background:
+    radial-gradient(circle at 25% 20%, rgba(224, 160, 79, 0.16), transparent 55%),
+    repeating-linear-gradient(0deg, transparent 0 23px, rgba(255, 255, 255, 0.025) 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, rgba(255, 255, 255, 0.025) 23px 24px),
+    var(--bg-raised);
+}
+.thumb-empty {
+  position: absolute;
+  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 30% 20%, rgba(224, 160, 79, 0.14), transparent 60%), var(--bg-raised);
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
 }
-.thumb-bg-icon {
-  font-size: 38px;
+.thumb-empty i {
+  font-size: 34px;
   color: var(--copper);
-  opacity: 0.4;
+  opacity: 0.8;
 }
 .thumb-img {
   position: absolute;
@@ -361,23 +387,18 @@ const projects = [
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
+  transition: transform 0.4s ease;
+}
+.thumb-btn:hover .thumb-img {
+  transform: scale(1.03);
 }
 .thumb-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(6, 10, 8, 0.32);
-}
-.thumb-link {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-.thumb-link .thumb-overlay {
+  background: rgba(6, 10, 8, 0.55);
   opacity: 0;
   transition: opacity 0.2s ease;
-}
-.thumb-link:hover .thumb-overlay {
-  opacity: 1;
 }
 .visit-badge {
   position: absolute;
@@ -393,14 +414,38 @@ const projects = [
   letter-spacing: 0.02em;
   transition: opacity 0.2s ease;
 }
-.thumb-link:hover .visit-badge {
-  opacity: 1;
-}
 .visit-badge i {
   font-size: 12px;
 }
+.thumb-btn:hover .thumb-overlay,
+.thumb-btn:hover .visit-badge,
+.thumb-btn:focus-visible .thumb-overlay,
+.thumb-btn:focus-visible .visit-badge {
+  opacity: 1;
+}
+.video-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: rgba(6, 10, 8, 0.72);
+  color: var(--copper-bright);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+}
+.video-pill i {
+  font-size: 10px;
+}
 .play-btn {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -411,21 +456,18 @@ const projects = [
   justify-content: center;
   font-size: 17px;
   box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.5);
-  transition: transform 0.15s ease, background 0.15s ease;
 }
-.thumb-play:hover .play-btn {
-  transform: scale(1.08);
-  background: var(--copper-bright);
-}
+
+/* Card body */
 .project-body {
-  padding: 22px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 .project-head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 10px;
 }
@@ -436,68 +478,57 @@ const projects = [
   text-transform: uppercase;
   color: var(--copper-bright);
 }
-.repo-link {
+.project-period {
   flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--text-dim);
   font-family: var(--font-mono);
-  font-size: 12px;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-.repo-link:hover {
-  color: var(--copper-bright);
+  font-size: 11px;
+  color: var(--text-faint);
 }
 .project-body h3,
 .modal-body h3 {
   font-family: var(--font-display);
   font-size: 17px;
-  margin: 8px 0 4px;
+  margin: 6px 0 8px;
   color: var(--text);
   line-height: 1.3;
-}
-.project-period {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: var(--text-faint);
 }
 .project-desc {
   color: var(--text-dim);
   font-size: 14px;
-  line-height: 1.6;
-  margin: 12px 0 12px;
-}
-.project-details {
-  position: relative;
-  max-height: 128px;
+  line-height: 1.55;
+  margin: 0 0 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.project-details::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 32px;
-  background: linear-gradient(to bottom, transparent, var(--bg-card));
-  pointer-events: none;
+.project-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
-.project-points {
-  margin: 0 0 16px;
-  padding-left: 18px;
-  color: var(--text-dim);
+.project-card .project-stack {
+  margin-top: auto;
 }
-.project-points li {
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 5px;
+.mini-chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 3px 7px;
 }
-.project-points li::marker {
-  color: var(--copper);
+.project-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
-.view-btn {
+.view-btn,
+.action-link {
   all: unset;
   cursor: pointer;
   display: inline-flex;
@@ -506,29 +537,56 @@ const projects = [
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--copper-bright);
-  margin: 10px 0 16px;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
-.view-btn i {
+.action-link {
+  color: var(--text-dim);
+}
+.action-link:last-child {
+  margin-left: auto;
+}
+.view-btn i,
+.action-link i {
   font-size: 10px;
 }
-.view-btn:hover {
+.action-link .pi-github {
+  font-size: 15px;
+}
+.view-btn:hover,
+.action-link:hover {
   color: var(--copper);
 }
-.project-stack {
+
+/* See all */
+.see-all-wrap {
   display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: auto;
+  justify-content: center;
+  margin-top: 24px;
 }
-.mini-chip {
+.see-all-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: var(--text-faint);
+  font-size: 13px;
+  color: var(--copper-bright);
   border: 1px solid var(--line);
-  border-radius: 5px;
-  padding: 4px 8px;
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.see-all-btn i {
+  font-size: 11px;
+}
+.see-all-btn:hover {
+  border-color: var(--copper);
+  color: var(--copper);
 }
 
+/* Details modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -543,20 +601,20 @@ const projects = [
 .modal-card {
   position: relative;
   width: 100%;
-  max-width: 640px;
-  max-height: 88vh;
+  max-width: 760px;
+  max-height: 90vh;
   overflow-y: auto;
   padding: 0;
 }
 .modal-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 36px;
-  height: 36px;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 1px solid var(--line);
-  background: var(--bg-card);
+  background: rgba(6, 10, 8, 0.7);
   color: var(--text-dim);
   display: flex;
   align-items: center;
@@ -570,17 +628,76 @@ const projects = [
   color: var(--copper-bright);
 }
 .modal-thumb {
-  aspect-ratio: 16 / 9;
   border-radius: 14px 14px 0 0;
-  border-bottom: 1px solid var(--line);
 }
 .modal-body {
-  padding: 26px;
+  padding: 22px 24px 24px;
 }
-.modal-body .project-desc {
-  margin: 12px 0 14px;
+.modal-body--bare {
+  padding-top: 26px;
+  padding-right: 60px;
 }
-.modal-body .project-points {
-  margin: 0 0 20px;
+.modal-desc {
+  color: var(--text-dim);
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+.project-points {
+  margin: 0 0 18px;
+  padding-left: 18px;
+  color: var(--text-dim);
+}
+.project-points li {
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin-bottom: 5px;
+}
+.project-points li::marker {
+  color: var(--copper);
+}
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.modal-btn i {
+  font-size: 11px;
+}
+.modal-btn:hover {
+  border-color: var(--copper);
+  color: var(--copper-bright);
+}
+.modal-btn--primary {
+  background: var(--copper);
+  border-color: var(--copper);
+  color: #17110a;
+}
+.modal-btn--primary:hover {
+  background: var(--copper-bright);
+  color: #17110a;
+}
+
+@media (max-width: 560px) {
+  .modal-overlay {
+    padding: 12px;
+  }
+  .modal-body {
+    padding: 18px;
+  }
 }
 </style>
