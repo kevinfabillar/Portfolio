@@ -59,7 +59,7 @@ button:focus-visible,
 }
 
 .container {
-  max-width: 1440px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 clamp(20px, 4vw, 56px);
   position: relative;

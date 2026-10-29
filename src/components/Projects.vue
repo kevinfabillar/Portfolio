@@ -185,24 +185,6 @@ function withAutoplay(url) {
 // To show a GitHub link on the card, set repo: 'https://github.com/<user>/<repo>'.
 const projects = [
   {
-    tag: 'Work Project',
-    title: 'CzarinaForex — Forex Trading Platform',
-    period: 'Jun 2024 – Present',
-    video: '',
-    repo: '',
-    image: '',
-    thumbIcon: 'pi-chart-line',
-    noPreview: 'Private client system',
-    description:
-      'Sole engineer maintaining three production ASP.NET Core applications (HeadOffice, Outlet, Patron) for a live forex trading platform.',
-    points: [
-      'Diagnosed and resolved out-of-memory crashes, restoring full production availability.',
-      'Replaced Azure Service Bus queue hops with direct EF Core writes, cutting data retrieval latency from 3+ seconds to milliseconds.',
-      'Led the REST API migration and integrated a Vue 3 / Vite frontend, decoupling the client from the legacy queue-driven backend.',
-    ],
-    stack: ['ASP.NET Core', 'EF Core', 'SQL Server', 'Azure', 'Vue 3'],
-  },
-  {
     tag: 'Client Project',
     title: 'Wedding Invitation Web App with Admin Dashboard',
     period: '2024',
